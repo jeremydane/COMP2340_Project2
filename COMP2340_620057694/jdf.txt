@@ -1,0 +1,4 @@
+JDF COMP2340 Project 2
+UWI, Mona
+
+This is a simple text file.
