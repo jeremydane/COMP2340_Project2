@@ -37,10 +37,17 @@ void  close();
 
 char fileName[15];
 char fileCopy[15];
+char encrypted[15];
+char decrypted[15];
+
 int fileEncrypted=0, numrecords=0, currentrec=0;
-//int fileOpened;
+int FILESIZE=512;
+char txtfile[512];
+//int id={7,6,0,5,8,9,3,2,1};
+char id[9]={"760589321"};
 
 
+ 
 
 // /a :beep
 int main ()
@@ -60,7 +67,7 @@ int main ()
     {
            case 1:	system("cls");
 					system("color F2");
-					openingFile();
+					copy=openingFile();
 					break;
        
            case 2:	system("cls");
@@ -109,7 +116,7 @@ int menu2()
 {
 	int option=0;
 
-	//system("cls");
+	system("cls");
 	printf("\t F I L E    M E N U \n\n");
     printf("Choose from the options\n\n");
 
@@ -133,25 +140,28 @@ FILE *openingFile()
 {
 	FILE *fp, *copy;
 	char ch;
+	
+	puts("OPENING FILE");
 
-	//printf ("Source file name: "); //jdf.txt
-    //scanf ("%s", fileName);
-	strcat(fileName,"jdf.txt");
+	printf ("Source file name: "); //jdf.txt
+    scanf ("%s", fileName);
+	//strcat(fileName,"jdf.txt");
 	fp=openFile(fileName, "r");	
-	printf("\n\n==> %s opened",fileName);
+	printf("\n==> %s opened",fileName);
 	
 	//fileOpened=1;
+	puts("\nCOPYING FILE");
 
-	//printf ("\n\nDestination file name: "); //Copyjdf.txt
-	//scanf ("%s", fileCopy);
-	strcat(fileCopy,"Copyjdf.txt");
+	printf ("\n\nDestination file name: "); //Copyjdf.txt
+	scanf ("%s", fileCopy);
+	//strcat(fileCopy,"Copyjdf.txt");
 
 	copy =duplicate(fileCopy);		
 	while((ch=getc(fp))!=EOF)
 	{
 		putc(ch,copy);
 	}
-	printf("\nCOMPLETED");
+	printf("\nCOMPLETED\a");
 	getch();
 
 	fclose(fp);
@@ -286,38 +296,103 @@ int processFileMenu()
 
     return option;
 }
-
-
-
 void encrypt(FILE *copy)
 {
-	char ch;
-	while((ch=getc(copy))!=EOF)
+	FILE *fp;
+	int i=0;
+	rewind(copy);
+    /*go through the file and change all characters to 1 charater after */
+    printf ("\n\nDestination file name: "); //Encryptedjdf.txt
+	scanf ("%s", encrypted);
+	
+	fp= openFile(encrypted, "w");
+	puts("Loading *");
+    while ((i = fgetc(copy))!=EOF )
 	{
-		ch=ch+'7';
-		//printf(ch);
-		putc(ch,copy);
-	}
-	printf("Encrypted");
-	getch();
+        i = i + 1;
+        fseek(copy, -1, SEEK_CUR);
+        fputc(i,fp);
+		fprintf(fp,i);
+        //fflush(file);
+        //fflush not needed if going back to original position in the file
+        fseek(copy, 0, SEEK_CUR);
+		puts("*");
+    }
+	printf("Encrypted \a\a");
+	fclose(copy);
+	//getch();
+	fileOpened(encrypted, fp);
 }
 
-void decrypt()
-{
+//void encrypt2(FILE *copy)
+//{
+//	int i,shiftval;
+//    currentrec = 0;
+//
+//	while (currentrec < FILESIZE)
+//	{
+//		for ( i= 0; i <= 30-1;i++)
+//			{
+//				shiftval = id[i % 9]-48;
+//				txtfile[i]= txtfile[i] - shiftval;
+//				putc(txtfile[i],copy);
+//			}
+//		currentrec++;
+//	}
 
+
+	//while((ch=getc(copy))!=EOF)
+	//{
+		//ch=ch+'7';
+		//ch ^=*(key++);
+
+		//printf(ch);
+		//putc(ch,copy);
+	//}
+//	printf("Encrypted /a/a");
+//	getch();
+//}
+
+void decrypt(FILE *encrypted)
+{
+	FILE *fp;
+	int i=0;
+	rewind(encrypted);
+    /*go through the file and change all characters back from 1 */
+    rewind(encrypted);
+
+	printf ("\n\nDestination file name: "); //Decryptedjdf.txt
+	scanf ("%s", decrypted);
+	fp= openFile(decrypted, "w");
+    
+    while ( ( i = fgetc(encrypted) )!=EOF ){
+        i = i - 1;
+        fseek(encrypted, -1, SEEK_CUR);
+        fputc(i,fp);
+		fprintf(fp,i);
+        //fflush(file);
+        /* fflush not needed if going back to the original postion in the file
+         use one or the other */
+        fseek(encrypted, 0, SEEK_CUR);
+    }
+    fclose(encrypted);
+	fclose(fp);
+
+	fileOpened(decrypted,fp);
 }
 
 
 void  close()
 {
 	int i;
-	printf("-----Goodbye-----");
+	printf("-----Goodbye-----\n");
 	for (i=0; i<20; i++);
 	{
-		printf("*");
+		puts("*");
+		puts("");
+		
 		
 	}
-	//fclose(copy);
 	
 	getch();
 	system("pause");

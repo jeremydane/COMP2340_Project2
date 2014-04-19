@@ -2,4 +2,3 @@ JDF COMP2340 Project 2
 UWI, Mona
 
 This is a simple text file.
-I haven't used C in a while.
